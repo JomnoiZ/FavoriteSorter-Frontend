@@ -1,4 +1,8 @@
-import { rankedMembersListStore, uncomparedMembersStore } from '../../stores/SortedListStore';
+import {
+	rankedMembersListStore,
+	uncomparedMembersStore,
+	winningTable
+} from '../../stores/SortedListStore';
 import { type Member } from '$lib/types';
 
 const randomInteger = (minValue: number, maxValue: number) => {
@@ -14,6 +18,7 @@ export const sortByRank = () => {
 };
 
 export const onReset = (copiedList: Member[]) => {
+	const n = copiedList.length;
 	rankedMembersListStore.update(() => {
 		const newRankedList = [];
 		for (const member of copiedList) {
@@ -23,7 +28,6 @@ export const onReset = (copiedList: Member[]) => {
 	});
 	uncomparedMembersStore.update(() => {
 		const newUncomparedList: number[][] = [];
-		const n = copiedList.length;
 		for (let i = 0; i < n; i++) {
 			newUncomparedList.push([]);
 			for (let j = 0; j < n; j++) {
@@ -33,6 +37,16 @@ export const onReset = (copiedList: Member[]) => {
 		console.log(newUncomparedList);
 		return newUncomparedList;
 	});
+	winningTable.update(() => {
+		const newWinningTable: boolean[][] = [];
+		for (let i = 0; i < n; i++) {
+			newWinningTable.push([]);
+			for (let j = 0; j < n; j++) {
+				newWinningTable[i].push(i == j);
+			}
+		}
+		return newWinningTable;
+	});
 };
 
 export const getProgress = (allPair: number, uncomparedList: number[][]) => {
@@ -40,6 +54,7 @@ export const getProgress = (allPair: number, uncomparedList: number[][]) => {
 	if (n == 0) return 0;
 	let uncompared = 0;
 	for (let i = 0; i < n; i++) uncompared += uncomparedList[i].length;
+	if (uncompared == 0) sortByRank();
 	return ((allPair - uncompared) / allPair) * 100.0;
 };
 
@@ -58,22 +73,36 @@ export const randomPair = (uncomparedList: number[][]) => {
 	return [i, j];
 };
 
-export const onCompare = (x: number, y: number) => {
-	let cnt = 0;
+export const onCompare = (x: number, y: number, copiedWinningTable: boolean[][]) => {
+	const n = copiedWinningTable.length;
+	const cnt: number[] = [];
+	for (let i = 0; i < n; i++) cnt.push(0);
 	uncomparedMembersStore.update((currentUncompared) => {
-		currentUncompared[y] = currentUncompared[y].filter((element) => element != x);
-		const copiedList = [];
+		const copiedList = [],
+			copiedList2 = [];
 		for (const z of currentUncompared[x]) {
-			if (!currentUncompared[y].includes(z)) {
+			if (copiedWinningTable[y][z] == true) {
+				copiedWinningTable[x][z] = true;
 				currentUncompared[z] = currentUncompared[z].filter((element) => element != x);
-				cnt++;
+				cnt[x]++;
 			} else copiedList.push(z);
 		}
 		currentUncompared[x] = copiedList;
+
+		for (const z of currentUncompared[y]) {
+			if (copiedWinningTable[z][x] == true) {
+				copiedWinningTable[z][y] = true;
+				currentUncompared[z] = currentUncompared[z].filter((element) => element != y);
+				cnt[z]++;
+			} else copiedList2.push(z);
+		}
+		currentUncompared[y] = copiedList2;
+
 		return currentUncompared;
 	});
 	rankedMembersListStore.update((currentRankedList) => {
-		currentRankedList[x].Rank += cnt;
+		for (let i = 0; i < n; i++) currentRankedList[i].Rank += cnt[i];
 		return currentRankedList;
 	});
+	winningTable.update(() => copiedWinningTable);
 };

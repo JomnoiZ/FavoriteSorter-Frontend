@@ -1,8 +1,5 @@
 <script lang="ts">
-	import { sortByRank } from '$lib/utils/rankedlistServices';
 	import { rankedMembersListStore } from '../../../stores/SortedListStore';
-
-	sortByRank();
 </script>
 
 <h1 class="font-bold text-5xl mt-10 text-purple-900">Ranking List</h1>

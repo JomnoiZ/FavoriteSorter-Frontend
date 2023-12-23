@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { Progressbar } from 'flowbite-svelte';
 	import { sineOut } from 'svelte/easing';
-	import { rankedMembersListStore, uncomparedMembersStore } from '../../stores/SortedListStore';
+	import {
+		rankedMembersListStore,
+		uncomparedMembersStore,
+		winningTable
+	} from '../../stores/SortedListStore';
 	import { membersListStore } from '../../stores/MembersListStore';
 	import { onReset, onCompare, randomPair, getProgress } from '$lib/utils/rankedListServices';
 	import Card from '../../reusable/Card.svelte';
@@ -12,7 +16,7 @@
 	$: progress = getProgress(allPair, $uncomparedMembersStore);
 	$: currentPair = randomPair($uncomparedMembersStore);
 
-	$: console.log($rankedMembersListStore, $uncomparedMembersStore);
+	$: console.log($rankedMembersListStore, $uncomparedMembersStore, $winningTable);
 </script>
 
 <button
@@ -37,7 +41,7 @@
 		<Card>
 			<button
 				on:click={() => {
-					onCompare(currentPair[0], currentPair[1]);
+					onCompare(currentPair[0], currentPair[1], $winningTable);
 				}}
 			>
 				{#if $rankedMembersListStore[currentPair[0]].Data.Image != ''}
@@ -53,7 +57,7 @@
 			<button
 				class="flex flex-col items-center"
 				on:click={() => {
-					onCompare(currentPair[1], currentPair[0]);
+					onCompare(currentPair[1], currentPair[0], $winningTable);
 				}}
 			>
 				{#if $rankedMembersListStore[currentPair[1]].Data.Image != ''}
