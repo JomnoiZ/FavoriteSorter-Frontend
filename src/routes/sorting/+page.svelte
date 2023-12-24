@@ -20,23 +20,30 @@
 </script>
 
 <button
-	class="bg-red-500 rounded-xl text-white text-3xl mb-5 mt-10 px-5 py-5 cursor-pointer"
-	on:click={() => onReset($membersListStore)}>Start sorting</button
+	class="bg-red-500 hover:bg-red-600 rounded-xl text-white text-3xl mb-5 mt-10 px-5 py-5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+	disabled={n === 0}
+	on:click={() => onReset($membersListStore)}
 >
+	{#if m === 0}
+		Start sorting
+	{:else}
+		Restart sorting
+	{/if}
+</button>
+<p class="text-xl pb-2">Current Progress</p>
 <Progressbar
 	{progress}
 	animate
 	precision={2}
-	labelOutside="Current progress="
 	labelInside
 	tweenDuration={1500}
 	easing={sineOut}
 	size="h-12"
-	labelInsideClass="bg-blue-500 text-blue-100 text-base font-medium text-center p-4 leading-none rounded-full"
+	labelInsideClass="bg-blue-500 text-white text-base font-medium text-center p-4 leading-none rounded-full"
 	class="w-96 bg-blue-900"
 />
 
-<div class="flex gap-12 mt-9">
+<div class="flex gap-12 my-6 max-sm:flex-col">
 	{#if m > 0 && currentPair[0] != -1}
 		<Card>
 			<button
@@ -50,7 +57,7 @@
 						src={$rankedMembersListStore[currentPair[0]].Data.Image}
 					/>
 				{/if}
-				<h1 class="text-xl">{$rankedMembersListStore[currentPair[0]].Data.Name}</h1>
+				<h1 class="text-xl">1. {$rankedMembersListStore[currentPair[0]].Data.Name}</h1>
 			</button>
 		</Card>
 		<Card>
@@ -66,17 +73,15 @@
 						src={$rankedMembersListStore[currentPair[1]].Data.Image}
 					/>
 				{/if}
-				<h1 class="text-xl">
-					{$rankedMembersListStore[currentPair[1]].Data.Name}
-				</h1>
+				<h1 class="text-xl">2. {$rankedMembersListStore[currentPair[1]].Data.Name}</h1>
 			</button>
 		</Card>
 	{:else if m > 0}
 		<div class="flex flex-col items-center">
-			<h1 class="text-2xl">You've completed ranking your members list!!!</h1>
+			<h1 class="text-2xl mb-5">You've completed ranking your members list!!!</h1>
 			<a
 				href="/sorting/result"
-				class="bg-red-500 rounded-xl text-white text-3xl mb-5 mt-5 px-5 py-5 cursor-pointer"
+				class="bg-red-500 hover:bg-red-600 rounded-xl text-white text-3xl px-5 py-5 cursor-pointer"
 				>See the result</a
 			>
 		</div>

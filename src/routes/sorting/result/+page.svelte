@@ -1,16 +1,19 @@
 <script lang="ts">
+	import Card from '../../../reusable/Card.svelte';
 	import { rankedMembersListStore } from '../../../stores/SortedListStore';
 </script>
 
-<h1 class="font-bold text-5xl mt-10 text-purple-900">Ranking List</h1>
-<h2 class="mt-5 text-2xl">There are {$rankedMembersListStore.length} members.</h2>
-<ol class="flex flex-col items-center">
+<h1 class="font-bold text-5xl my-6 text-purple-900 text-center">Ranking List</h1>
+<h2 class="text-2xl">There are {$rankedMembersListStore.length} members.</h2>
+<ol class="flex flex-col items-center gap-12 my-6">
 	{#each $rankedMembersListStore as member}
-		<li class="my-5 text-xl flex flex-col items-center">
-			{#if member.Data.Image != ''}
-				<img alt={`รูปของ${member.Data.Name}`} src={member.Data.Image} />
-			{/if}
-			{$rankedMembersListStore.length - member.Rank}. {member.Data.Name}
-		</li>
+		<Card>
+			<li class="text-xl flex flex-col items-center">
+				{#if member.Data.Image != ''}
+					<img alt={`รูปของ${member.Data.Name}`} src={member.Data.Image} />
+				{/if}
+				{$rankedMembersListStore.length - member.Rank}. {member.Data.Name}
+			</li>
+		</Card>
 	{/each}
 </ol>

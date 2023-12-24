@@ -6,7 +6,11 @@
 </script>
 
 <DropFile {onDrop} onEnter={() => (fileOver = true)} onLeave={() => (fileOver = false)}>
-	<div class={`drop-zone ${fileOver ? 'over' : ''} rounded-2xl text-2xl cursor-pointer`}>
+	<div
+		class={`drop-zone ${
+			fileOver ? 'over' : ''
+		} bg-red-500 hover:bg-red-600 rounded-2xl text-2xl cursor-pointer`}
+	>
 		{#if fileOver}
 			<p>Drop it!</p>
 		{:else}
@@ -22,7 +26,6 @@
 		margin: auto;
 		width: 300px;
 		height: 100px;
-		background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 		color: white;
 	}
 	.over {

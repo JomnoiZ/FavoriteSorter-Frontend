@@ -1,7 +1,6 @@
 import { membersListStore } from '../../stores/MembersListStore';
 import { read, utils } from 'xlsx';
 import { type Member } from '$lib/types';
-import { onReset } from './rankedListServices';
 
 export async function onDrop(files: File[]) {
 	const file = await files[0].arrayBuffer();
@@ -15,7 +14,6 @@ export async function onDrop(files: File[]) {
 		for (const row of data) {
 			copiedList.push({ Name: row['ชื่อ'], Image: row['รูป'] });
 		}
-		onReset(copiedList);
 		return copiedList;
 	});
 }
