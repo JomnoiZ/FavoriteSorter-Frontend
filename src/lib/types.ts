@@ -1,9 +1,18 @@
+export interface LList {
+	list: number[];
+}
+
+export interface List {
+	id: string;
+	title: string;
+}
+
 export interface Member {
-	Name: string;
-	Image: string;
+	name: string;
+	image: string;
 }
 
 export interface RankedMember {
-	Data: Member;
-	Rank: number;
+	data: Member;
+	rank: number;
 }

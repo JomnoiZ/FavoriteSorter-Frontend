@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDrop } from '$lib/utils/listServices';
+	import { onDrop } from '$lib/utils/dataServices';
 	import DropFile from 'svelte-parts/DropFile.svelte';
 
 	let fileOver = false;
@@ -14,7 +14,7 @@
 		{#if fileOver}
 			<p>Drop it!</p>
 		{:else}
-			<p>Upload your list (.xlsx)</p>
+			<p>Upload New List (.xlsx)</p>
 		{/if}
 	</div>
 </DropFile>

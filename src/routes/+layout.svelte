@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { onLogout } from '$lib/utils/dataServices';
 	import '../app.css';
 	import Footer from '../components/Footer.svelte';
+	import Login from '../components/Login.svelte';
+	import { userStore } from '../stores/UserStore';
 </script>
 
 <head>
@@ -13,6 +16,14 @@
 			<li class="px-6 max-sm:px-4"><a href="/">Home</a></li>
 			<li class="px-6 max-sm:px-4"><a href="/sorting">Sort</a></li>
 			<li class="px-6 max-sm:px-4"><a href="/all-members">All Members</a></li>
+			{#if $userStore === '' || $userStore === 'null'}
+				<li class="px-6 max-sm:px-4"><Login /></li>
+			{:else}
+				<li class="px-6 max-sm:px-4"><a href="/my-profile">My Profile</a></li>
+				<li class="px-6 max-sm:px-4">
+					<button on:click={() => onLogout()}>Logout</button>
+				</li>
+			{/if}
 		</ul>
 	</nav>
 </div>

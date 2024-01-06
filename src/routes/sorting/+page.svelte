@@ -6,23 +6,37 @@
 		uncomparedMembersStore,
 		winningTable
 	} from '../../stores/SortedListStore';
-	import { membersListStore } from '../../stores/MembersListStore';
+	import { membersListStore, selectedListStore } from '../../stores/MembersListStore';
 	import { onReset, onCompare, randomPair, getProgress } from '$lib/utils/rankedListServices';
 	import Card from '../../reusable/Card.svelte';
+	import { onMount } from 'svelte';
+	import { initData } from '$lib/utils/dataServices';
 
 	$: n = $membersListStore.length;
 	$: m = $uncomparedMembersStore.length;
 	$: allPair = n * (n - 1);
-	$: progress = getProgress(allPair, $uncomparedMembersStore);
+	$: progress = getProgress(allPair, $uncomparedMembersStore, $selectedListStore.id);
 	$: currentPair = randomPair($uncomparedMembersStore);
 
-	$: console.log($rankedMembersListStore, $uncomparedMembersStore, $winningTable);
+	$: console.log(
+		n,
+		m,
+		$membersListStore,
+		$rankedMembersListStore,
+		$uncomparedMembersStore,
+		$winningTable
+	);
+
+	onMount(() => initData());
 </script>
 
+<h1 class="font-bold text-5xl m-8 text-purple-900 text-center">
+	{$selectedListStore.title}
+</h1>
 <button
-	class="bg-red-500 hover:bg-red-600 rounded-xl text-white text-3xl mb-5 mt-10 px-5 py-5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+	class="bg-red-500 hover:bg-red-600 rounded-xl text-white text-3xl mb-5 px-5 py-5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
 	disabled={n === 0}
-	on:click={() => onReset($membersListStore)}
+	on:click={() => onReset($membersListStore, $selectedListStore.id)}
 >
 	{#if m === 0}
 		Start sorting
@@ -44,36 +58,36 @@
 />
 
 <div class="flex gap-12 my-6 max-sm:flex-col">
-	{#if m > 0 && currentPair[0] != -1}
+	{#if m > 0 && currentPair[0] !== -1}
 		<Card>
 			<button
 				on:click={() => {
-					onCompare(currentPair[0], currentPair[1], $winningTable);
+					onCompare(currentPair[0], currentPair[1], $winningTable, $selectedListStore.id);
 				}}
 			>
-				{#if $rankedMembersListStore[currentPair[0]].Data.Image != ''}
+				{#if $rankedMembersListStore[currentPair[0]].data.image !== ''}
 					<img
-						alt={`รูปของ${$rankedMembersListStore[currentPair[0]].Data.Name}`}
-						src={$rankedMembersListStore[currentPair[0]].Data.Image}
+						alt={`รูปของ${$rankedMembersListStore[currentPair[0]].data.name}`}
+						src={$rankedMembersListStore[currentPair[0]].data.image}
 					/>
 				{/if}
-				<h1 class="text-xl">1. {$rankedMembersListStore[currentPair[0]].Data.Name}</h1>
+				<h1 class="text-xl">1. {$rankedMembersListStore[currentPair[0]].data.name}</h1>
 			</button>
 		</Card>
 		<Card>
 			<button
 				class="flex flex-col items-center"
 				on:click={() => {
-					onCompare(currentPair[1], currentPair[0], $winningTable);
+					onCompare(currentPair[1], currentPair[0], $winningTable, $selectedListStore.id);
 				}}
 			>
-				{#if $rankedMembersListStore[currentPair[1]].Data.Image != ''}
+				{#if $rankedMembersListStore[currentPair[1]].data.image !== ''}
 					<img
-						alt={`รูปของ${$rankedMembersListStore[currentPair[1]].Data.Name}`}
-						src={$rankedMembersListStore[currentPair[1]].Data.Image}
+						alt={`รูปของ${$rankedMembersListStore[currentPair[1]].data.name}`}
+						src={$rankedMembersListStore[currentPair[1]].data.image}
 					/>
 				{/if}
-				<h1 class="text-xl">2. {$rankedMembersListStore[currentPair[1]].Data.Name}</h1>
+				<h1 class="text-xl">2. {$rankedMembersListStore[currentPair[1]].data.name}</h1>
 			</button>
 		</Card>
 	{:else if m > 0}
