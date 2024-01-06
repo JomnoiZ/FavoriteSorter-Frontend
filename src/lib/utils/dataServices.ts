@@ -57,7 +57,15 @@ export async function onSelectList(id: string, cur_id: string) {
 
 	const result = await fetch(PUBLIC_API_BASE + '/members-list/' + id, {
 		headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
-	}).then((res) => res.json());
+	})
+		.then((res) => {
+			if (res.status === 401) {
+				onLogout();
+				throw new Error('Please Login!');
+			}
+			return res.json();
+		})
+		.catch((err) => console.log(err));
 
 	console.log(result);
 	updateListStore(result);
@@ -92,7 +100,13 @@ export async function onDrop(files: File[]) {
 			list: copiedList
 		})
 	})
-		.then((res) => res.json())
+		.then((res) => {
+			if (res.status === 401) {
+				onLogout();
+				throw new Error('Please Login!');
+			}
+			return res.json();
+		})
 		.then((data) => {
 			selectedListStore.update(() => {
 				return { id: data.id, title: data.title };
@@ -113,20 +127,36 @@ export async function updateList(id: string, newList) {
 			Authorization: 'Bearer ' + localStorage.getItem('token')
 		},
 		body: JSON.stringify(newList)
-	}).then((res) => res.json());
+	})
+		.then((res) => {
+			if (res.status === 401) {
+				onLogout();
+				throw new Error('Please Login!');
+			}
+			return res.json();
+		})
+		.catch((err) => console.log(err));
 
 	console.log(result);
 }
 
 export async function deleteList(id: string) {
-	if (confirm('Are you sure to delete the list?') === false) return;
+	if (!confirm('Are you sure to delete the list?')) return;
 
 	const result = await fetch(PUBLIC_API_BASE + '/members-list/' + id, {
 		method: 'DELETE',
 		headers: {
 			Authorization: 'Bearer ' + localStorage.getItem('token')
 		}
-	}).then((res) => res.json());
+	})
+		.then((res) => {
+			if (res.status === 401) {
+				onLogout();
+				throw new Error('Please Login!');
+			}
+			return res.json();
+		})
+		.catch((err) => console.log(err));
 
 	console.log(result);
 	selectedListStore.update(() => {
@@ -190,7 +220,10 @@ export async function onLogin(username: string, password: string) {
 }
 
 export function onLogout() {
+	if (!confirm('Are you sure to logout?')) return;
+
 	userStore.update(() => '');
 	localStorage.removeItem('username');
 	localStorage.removeItem('token');
+	goto('/');
 }
