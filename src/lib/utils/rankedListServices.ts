@@ -59,7 +59,7 @@ export const onReset = (copiedList: Member[], id: string) => {
 
 export const getProgress = (allPair: number, uncomparedList: LList[], id: string) => {
 	const n = uncomparedList.length;
-	if (n == 0) return 0;
+	if (n === 0) return 0;
 	let uncompared = 0;
 	for (let i = 0; i < n; i++) {
 		console.log(uncomparedList[i].list.length);
@@ -77,7 +77,7 @@ export const randomPair = (uncomparedList: LList[]) => {
 		if (uncomparedList[i].list.length > 0) tempList.push(i);
 	}
 
-	if (tempList.length == 0) return [-1, -1];
+	if (tempList.length === 0) return [-1, -1];
 
 	const index = randomInteger(0, tempList.length - 1);
 	const i = tempList[index];
@@ -96,7 +96,7 @@ export const onCompare = (x: number, y: number, copiedWinningTable: LList[], id:
 		for (const z of currentUncompared[x].list) {
 			if (copiedWinningTable[y].list[z] === 1) {
 				copiedWinningTable[x].list[z] = 1;
-				currentUncompared[z].list = currentUncompared[z].list.filter((element) => element != x);
+				currentUncompared[z].list = currentUncompared[z].list.filter((element) => element !== x);
 				cnt[x]++;
 			} else copiedList.push(z);
 		}
@@ -105,7 +105,7 @@ export const onCompare = (x: number, y: number, copiedWinningTable: LList[], id:
 		for (const z of currentUncompared[y].list) {
 			if (copiedWinningTable[z].list[x] === 1) {
 				copiedWinningTable[z].list[y] = 1;
-				currentUncompared[z].list = currentUncompared[z].list.filter((element) => element != y);
+				currentUncompared[z].list = currentUncompared[z].list.filter((element) => element !== y);
 				cnt[z]++;
 			} else copiedList2.push(z);
 		}

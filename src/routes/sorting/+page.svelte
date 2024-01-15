@@ -11,6 +11,7 @@
 	import Card from '../../reusable/Card.svelte';
 	import { onMount } from 'svelte';
 	import { initData } from '$lib/utils/dataServices';
+	import { userStore } from '../../stores/UserStore';
 
 	$: n = $membersListStore.length;
 	$: m = $uncomparedMembersStore.length;
@@ -27,7 +28,9 @@
 		$winningTable
 	);
 
-	onMount(() => initData());
+	onMount(() => {
+		if ($userStore !== '') initData();
+	});
 </script>
 
 <h1 class="font-bold text-5xl m-8 text-purple-900 text-center">

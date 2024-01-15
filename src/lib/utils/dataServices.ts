@@ -11,8 +11,6 @@ import {
 import { listsStore, userStore } from '../../stores/UserStore';
 
 export async function initData() {
-	if (!userStore) return;
-
 	const lists = await fetch(PUBLIC_API_BASE + '/members-list', {
 		headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
 	})
@@ -27,6 +25,17 @@ export async function initData() {
 	const newLists: List[] = [];
 	for (const list of lists) newLists.push({ id: list.id, title: list.title });
 	listsStore.update(() => newLists);
+}
+
+async function clearListStore() {
+	updateListStore({
+		id: 'n/a',
+		title: 'untitled',
+		list: [],
+		rankedList: [],
+		uncomparedMembers: [],
+		winningTable: []
+	});
 }
 
 export async function updateListStore(result) {
@@ -44,14 +53,7 @@ export async function updateListStore(result) {
 
 export async function onSelectList(id: string, cur_id: string) {
 	if (id === cur_id) {
-		updateListStore({
-			id: 'n/a',
-			title: 'untitiled',
-			list: [],
-			rankedList: [],
-			uncomparedMambers: [],
-			winningTable: []
-		});
+		clearListStore();
 		return;
 	}
 
@@ -89,31 +91,33 @@ export async function onDrop(files: File[]) {
 		copiedList.push({ name: row['ชื่อ'], image: row['รูป'] });
 	}
 
-	await fetch(PUBLIC_API_BASE + '/members-list', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: 'Bearer ' + localStorage.getItem('token')
-		},
-		body: JSON.stringify({
-			title: fileName,
-			list: copiedList
+	if (localStorage.getItem('username')) {
+		await fetch(PUBLIC_API_BASE + '/members-list', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: 'Bearer ' + localStorage.getItem('token')
+			},
+			body: JSON.stringify({
+				title: fileName,
+				list: copiedList
+			})
 		})
-	})
-		.then((res) => {
-			if (res.status === 401) {
-				onLogout();
-				throw new Error('Please Login!');
-			}
-			return res.json();
-		})
-		.then((data) => {
-			selectedListStore.update(() => {
-				return { id: data.id, title: data.title };
-			});
-			console.log(data);
-		})
-		.catch((err) => console.log(err));
+			.then((res) => {
+				if (res.status === 401) {
+					onLogout();
+					throw new Error('Please Login!');
+				}
+				return res.json();
+			})
+			.then((data) => {
+				selectedListStore.update(() => {
+					return { id: data.id, title: data.title };
+				});
+				console.log(data);
+			})
+			.catch((err) => console.log(err));
+	}
 
 	membersListStore.update(() => copiedList);
 	goto('/all-members');
@@ -163,14 +167,7 @@ export async function deleteList(id: string) {
 		return { id: 'n/a', title: 'untitled' };
 	});
 	listsStore.update((cur) => cur.filter((list) => list.id !== id));
-	updateListStore({
-		id: 'n/a',
-		title: 'untitiled',
-		list: [],
-		rankedList: [],
-		uncomparedMembers: [],
-		winningTable: []
-	});
+	clearListStore();
 }
 
 export async function onRegister(username: string, password: string, password2: string) {
@@ -209,6 +206,7 @@ export async function onLogin(username: string, password: string) {
 			console.log(data);
 
 			userStore.update(() => username);
+			clearListStore();
 			localStorage.setItem('token', data.access_token);
 			localStorage.setItem('username', username);
 		})
@@ -223,6 +221,7 @@ export function onLogout() {
 	if (!confirm('Are you sure to logout?')) return;
 
 	userStore.update(() => '');
+	clearListStore();
 	localStorage.removeItem('username');
 	localStorage.removeItem('token');
 	goto('/');
